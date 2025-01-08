@@ -24,23 +24,12 @@ class Order extends Model
     {
         return $this->belongsToMany(Medicine::class)->withPivot('quantity');
     }
-
-    // public function getQuantityAttribute()
-    // {
-    //     return $this->getAttribute('quantity');
-    // }
-    // public function getQuantityAttribute()
-    // {
-    //     // Calculate the total quantity of medicines in the order
-    //     return $this->medicines->sum('pivot.quantity');
-    // }
     protected function totalPriceWithTax(): Attribute
     {
         return new Attribute(
             get: fn() => number_format($this->calculateTotalPriceWithTax(), 2),
         );
     }
-
     protected function calculateTotalPriceWithTax()
     {
         return $this->total_price * 1.1; // 10% tax rate

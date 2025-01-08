@@ -77,28 +77,83 @@ class MedicineController extends Controller
     {
         // Authorization
         // $this->authorize('create', $medicine);
-        
+
         // Creating a single medicine
-        $medicine = Medicine::create(
-            [
+
+
+        // $medicine = Medicine::create(
+        //     [
+        //         'name' => $request->name,
+        //         'description' => $request->description,
+        //         'stock' => $request->stock,
+        //         'price' => $request->price
+        //     ]
+        // );
+        // return response()->json([
+        //     'data' => $medicine,
+        //     'message' => __('messages.medicines.created')
+        // ]);
+
+        // // $this->authorize('create', Medicine::class);
+
+        // // Creating multiple medicines
+        // $medicinesData = $request->input('data');
+        // $medicines = [];
+
+        // foreach ($medicinesData as $medicineData) {
+        //     $medicine = Medicine::create([
+        //         'name' => $medicineData['name'],
+        //         'description' => $medicineData['description'],
+        //         'stock' => $medicineData['stock'],
+        //         'price' => $medicineData['price']
+        //     ]);
+
+        //     $medicines[] = $medicine;
+
+        //     // Append the medicine data to a file
+        //     Storage::append('medicines.txt', json_encode($medicineData));
+        // }
+
+        // return response()->json([
+        //     'data' => $medicines,
+        //     'message' => __('messages.medicines.created')
+        // ]);
+        $files = [];
+
+        // single medicine creation
+        if (!$request->has('data')) {
+           
+            $medicine = Medicine::create([
                 'name' => $request->name,
                 'description' => $request->description,
                 'stock' => $request->stock,
                 'price' => $request->price
-            ]
-        );
-        return response()->json([
-            'data' => $medicine,
-            'message' => __('messages.medicines.created')
-        ]);
+            ]);
 
-        // $this->authorize('create', Medicine::class);
+            // Checking for files and store them
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    $filePath = $file->store('medicines/files', 'public'); // Store in storage/app/public/medicines/files
+                    $files[] = $filePath;
+                }
 
-        // Creating multiple medicines
+                // Saving the file paths in the database 
+                $medicine->files = json_encode($files);
+                $medicine->save();
+            }
+
+            return response()->json([
+                'data' => $medicine,
+                'message' => __('messages.medicines.created')
+            ], 201);
+        }
+
+        // Multiple medicines creation
         $medicinesData = $request->input('data');
         $medicines = [];
 
         foreach ($medicinesData as $medicineData) {
+            // Create the medicine record
             $medicine = Medicine::create([
                 'name' => $medicineData['name'],
                 'description' => $medicineData['description'],
@@ -106,16 +161,27 @@ class MedicineController extends Controller
                 'price' => $medicineData['price']
             ]);
 
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    $filePath = $file->store('medicines/files',
+                        'public'
+                    ); 
+                    $files[] = $filePath;
+                }
+                $medicine->files = json_encode($files);
+                $medicine->save();
+            }
             $medicines[] = $medicine;
-
-            // Append the medicine data to a file
-            Storage::append('medicines.txt', json_encode($medicineData));
+            
+            Storage::append('medicines.txt',
+                json_encode($medicineData)
+            );
         }
 
         return response()->json([
             'data' => $medicines,
             'message' => __('messages.medicines.created')
-        ]);
+        ], 201);
     } 
         
     // Show single medicine

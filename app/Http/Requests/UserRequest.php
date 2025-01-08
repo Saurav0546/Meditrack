@@ -27,12 +27,4 @@ class UserRequest extends FormRequest
             'password' => 'required|string|min:1'
         ];
     }
-    // public function messages()
-    // {
-    //     return [
-    //         'name.required' => 'User name required.',
-    //         'email.required' => 'Email required.',
-    //         'password.required' => 'Password required.'
-    //     ];
-    // }
 }

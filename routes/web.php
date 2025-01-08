@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Request;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\MedicineController;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\EmailController;
 

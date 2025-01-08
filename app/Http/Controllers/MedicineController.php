@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MedicineUpdateRequest;
-use App\Services\MedicineFilterService;
+// use App\Services\MedicineFilterService;
 use App\Models\Medicine;
 use App\Traits\ApiResponseTrait;
-use Illuminate\Support\Facades\Gate;
-use App\Middleware\LocaleMiddleware;
+// use App\Middleware\LocaleMiddleware;
 use App\Http\Requests\StoreMedicineRequest;
-use App\Http\Requests\ShowMedicineRequest;
+// use App\Http\Requests\ShowMedicineRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Exception;
@@ -78,22 +77,25 @@ class MedicineController extends Controller
     {
         // Authorization
         // $this->authorize('create', $medicine);
+        
+        // Creating a single medicine
+        $medicine = Medicine::create(
+            [
+                'name' => $request->name,
+                'description' => $request->description,
+                'stock' => $request->stock,
+                'price' => $request->price
+            ]
+        );
+        return response()->json([
+            'data' => $medicine,
+            'message' => __('messages.medicines.created')
+        ]);
 
-        // $medicine = Medicine::create(
-        //     [
-        //         'name' => $request->name,
-        //         'description' => $request->description,
-        //         'stock' => $request->stock,
-        //         'price' => $request->price
-        //     ]
-        // );
-
-        // return response()->json([
-        //     'data' => $medicine,
-        //     'message' => __('messages.medicines.created')
-        // ]);
         // $this->authorize('create', Medicine::class);
-        $medicinesData = $request->input('data'); // Assuming the data is sent as 'data' in the request
+
+        // Creating multiple medicines
+        $medicinesData = $request->input('data');
         $medicines = [];
 
         foreach ($medicinesData as $medicineData) {
@@ -104,7 +106,6 @@ class MedicineController extends Controller
                 'price' => $medicineData['price']
             ]);
 
-            // Store the created medicine in the array
             $medicines[] = $medicine;
 
             // Append the medicine data to a file

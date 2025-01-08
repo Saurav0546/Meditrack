@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Route;
 // Firstly user have to register and login after that a token will generated and that token will be used to access the api
 
 // Routes for user authentication
-
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
@@ -42,6 +41,7 @@ Route::middleware(["auth:sanctum", "localization"])->group(function () {
     Route::post('/orders', [OrderController::class, 'store']);
     Route::put('/orders/{order}', [OrderController::class, 'update']);
     Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
+    
     // Route for stock-report
     Route::get('/stock-report', [ReportController::class, 'generateStockReport']);
 });

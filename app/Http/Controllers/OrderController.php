@@ -51,7 +51,7 @@ class OrderController extends Controller
             'customer_name' => $request->customer_name,
             'order_date' => $request->order_date,
         ]);
-        // Calculating total price based an order quantity
+        // // Calculating total price based an order quantity
         $medicinesData = [];
         $totalPrice = 0;
 
@@ -86,6 +86,8 @@ class OrderController extends Controller
             'reward_points' => $user->reward_points, 
             'message' => __('messages.orders.created')
         ], 201);
+
+        
     }
 
     // Update order

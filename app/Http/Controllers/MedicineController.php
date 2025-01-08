@@ -79,8 +79,6 @@ class MedicineController extends Controller
         // $this->authorize('create', $medicine);
 
         // Creating a single medicine
-
-
         // $medicine = Medicine::create(
         //     [
         //         'name' => $request->name,
@@ -118,6 +116,7 @@ class MedicineController extends Controller
         //     'data' => $medicines,
         //     'message' => __('messages.medicines.created')
         // ]);
+        
         $files = [];
 
         // single medicine creation
@@ -132,12 +131,16 @@ class MedicineController extends Controller
 
             // Checking for files and store them
             if ($request->hasFile('files')) {
+                $files = []; 
+
                 foreach ($request->file('files') as $file) {
-                    $filePath = $file->store('medicines/files', 'public'); // Store in storage/app/public/medicines/files
-                    $files[] = $filePath;
+                    $filePath = $file->store('medicines/files', 'public');
+
+                    $fileUrl = Storage::url($filePath); 
+                    $files[] = $fileUrl; 
                 }
 
-                // Saving the file paths in the database 
+                // Save the file URLs/paths as JSON in the database
                 $medicine->files = json_encode($files);
                 $medicine->save();
             }

@@ -52,7 +52,7 @@ class OrderController extends Controller
 
         // Calculating total price based an order quantity
         $medicinesData = [];
-        $totalPrice = 0;  // Initialize the total price
+        $totalPrice = 0; 
 
         if ($request->has('medicines')) {
             foreach ($request->medicines as $medicine) {
@@ -63,7 +63,7 @@ class OrderController extends Controller
                         $quantity = $medicine['quantity'];
                         $totalPrice += $price * $quantity;  
                         $medicinesData[$medicine['id']] = ['quantity' => $quantity];
-                    }
+                    } 
                 }
             }
         }

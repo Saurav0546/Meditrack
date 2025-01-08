@@ -37,7 +37,7 @@ class Order extends Model
     protected function totalPriceWithTax(): Attribute
     {
         return new Attribute(
-            get: fn() => $this->calculateTotalPriceWithTax(),
+            get: fn() => number_format($this->calculateTotalPriceWithTax(), 2),
         );
     }
 
@@ -45,5 +45,4 @@ class Order extends Model
     {
         return $this->total_price * 1.1; // 10% tax rate
     }
-
 }

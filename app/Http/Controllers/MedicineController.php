@@ -10,12 +10,14 @@ use Illuminate\Support\Facades\Gate;
 use App\Middleware\LocaleMiddleware;
 use App\Http\Requests\StoreMedicineRequest;
 use App\Http\Requests\ShowMedicineRequest;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Exception;
 
 class MedicineController extends Controller
 {
     use ApiResponseTrait;
+
     // Get medicines
     public function index(Request $request)
     {
@@ -75,23 +77,46 @@ class MedicineController extends Controller
     public function store(StoreMedicineRequest $request, Medicine $medicine)
     {
         // Authorization
-        $this->authorize('create', $medicine);
-        
-        $medicine = Medicine::create(
-            [
-                'name' => $request->name,
-                'description' => $request->description,
-                'stock' => $request->stock,
-                'price' => $request->price
-            ]
-        );
+        // $this->authorize('create', $medicine);
+
+        // $medicine = Medicine::create(
+        //     [
+        //         'name' => $request->name,
+        //         'description' => $request->description,
+        //         'stock' => $request->stock,
+        //         'price' => $request->price
+        //     ]
+        // );
+
+        // return response()->json([
+        //     'data' => $medicine,
+        //     'message' => __('messages.medicines.created')
+        // ]);
+        // $this->authorize('create', Medicine::class);
+        $medicinesData = $request->input('data'); // Assuming the data is sent as 'data' in the request
+        $medicines = [];
+
+        foreach ($medicinesData as $medicineData) {
+            $medicine = Medicine::create([
+                'name' => $medicineData['name'],
+                'description' => $medicineData['description'],
+                'stock' => $medicineData['stock'],
+                'price' => $medicineData['price']
+            ]);
+
+            // Store the created medicine in the array
+            $medicines[] = $medicine;
+
+            // Append the medicine data to a file
+            Storage::append('medicines.txt', json_encode($medicineData));
+        }
 
         return response()->json([
-            'data' => $medicine,
+            'data' => $medicines,
             'message' => __('messages.medicines.created')
         ]);
-    }
-
+    } 
+        
     // Show single medicine
     public function show(Medicine $medicine)
     {

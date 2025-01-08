@@ -22,11 +22,11 @@ class StoreOrderRequest extends FormRequest
     public function rules()
     {
         return [
-                'customer_name' => 'required|string|max:255', 
-                'order_date' => 'required|date', 
-                'medicines' => 'required|array', 
-                'medicines.*.id' => 'required|integer|exists:medicines,id', 
-                'medicines.*.quantity' => 'required|integer|min:1',
+            'customer_name' => 'required|string|max:255', 
+            'order_date' => 'required|date', 
+            'medicines' => 'required|array', 
+            'medicines.*.id' => 'required|integer|exists:medicines,id', 
+            'medicines.*.quantity' => 'required|integer|min:1',
         ];
     }
 }

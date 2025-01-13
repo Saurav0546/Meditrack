@@ -68,26 +68,39 @@ class OrderController extends Controller
                 }
             }
         }
-        $order->medicines()->attach($medicinesData);
-        $order->total_price = $totalPrice;
+        $useRewardPoints = $request->input('use_reward_points', false); 
+        $rewardPointsUsed = 0;
+        $finalPrice = $totalPrice;
+
+        if ($useRewardPoints) {
+            $user = auth()->user();
+            $maxDiscountableAmount = floor($totalPrice / 10);  
+            $rewardPointsAvailable = $user->reward_points;
+
+            if ($rewardPointsAvailable > 0
+            ) {
+                $rewardPointsUsed = min($rewardPointsAvailable, $maxDiscountableAmount);
+                $finalPrice = $totalPrice - $rewardPointsUsed;
+
+                $user->reward_points -= $rewardPointsUsed;
+                $user->save();
+            }
+        }
         
+        $order->medicines()->attach($medicinesData);
+        $order->total_price = $finalPrice;
         $order->save();
 
-        // Reward points
         $rewardPoints = floor($totalPrice / 10);
-        $user = auth()->user(); 
-        $user = User::find($user->id); 
-        if ($user) {
-            $user->reward_points += $rewardPoints; // Increment user's reward points
-            $user->save(); 
-        }   
-        return response()->json([
-            'data' => $order->load('medicines'),
-            'reward_points' => $user->reward_points, 
-            'message' => __('messages.orders.created')
-        ], 201);
 
-        
+        return response()->json([
+            'data' => $order->load('medicines'),  
+            'original_price' => $totalPrice,      
+            'discounted_price' => $finalPrice,   
+            'reward_points_used' => $rewardPointsUsed, 
+            'reward_points_remaining' => $user->reward_points, 
+            'message' => __('messages.orders.created') 
+        ], 201);
     }
 
     // Update order
